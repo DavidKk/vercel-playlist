@@ -2,7 +2,7 @@ import { stream } from '@/initializer/controller'
 import { fetchAndProcessEPG } from '@/services/epg/fetch'
 import { fetchChannels } from '@/services/playlist'
 import type { Channel } from '@/services/epg/types'
-import { setHeaders, setStatus } from '@/services/context'
+import { setHeaders } from '@/services/context'
 
 export const GET = stream(async () => {
   const channels = await fetchChannels()
