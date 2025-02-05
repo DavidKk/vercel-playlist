@@ -1,4 +1,5 @@
 export interface Context {
+  status?: number
   headers: Headers
 }
 
@@ -10,7 +11,7 @@ export function runWithContext<T>(fn: () => T): T {
 
 export function createContext(): Context {
   const headers = new Headers()
-  return { headers }
+  return { status: 200, headers }
 }
 
 export function getContext() {
@@ -40,4 +41,10 @@ export const setHeaders = withContext((ctx, headers: Headers | Record<string, st
   for (const [key, value] of Object.entries(headers)) {
     ctx.headers.set(key, value)
   }
+})
+
+export const getStatus = withContext((ctx) => ctx.status)
+
+export const setStatus = withContext((ctx, status: number) => {
+  ctx.status = status
 })
