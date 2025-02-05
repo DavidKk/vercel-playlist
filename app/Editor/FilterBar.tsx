@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { BackspaceIcon } from '@heroicons/react/16/solid'
 import { fuzzySearch } from '@/utils/find'
-import { Channel } from '@/services/playlist/types'
+import type { Channel } from '@/services/playlist/types'
 
 export interface FilterBarProps {
   channels: Channel[]

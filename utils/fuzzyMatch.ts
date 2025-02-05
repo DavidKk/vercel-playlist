@@ -1,5 +1,6 @@
 export function fuzzyMatch(pattern: string, name: string) {
   if (!(typeof pattern === 'string' && typeof name === 'string')) {
+    // eslint-disable-next-line no-console
     console.warn(`fuzzyMatch: pattern or name is empty`)
     return 0
   }

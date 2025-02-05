@@ -20,6 +20,7 @@ export async function fetchChannels() {
       const m3u = parseM3U(content)
       channels.push(...m3u.channels)
     } catch {
+      // eslint-disable-next-line no-console
       console.error(`Failed to fetch channels from ${url}`)
     }
   }
