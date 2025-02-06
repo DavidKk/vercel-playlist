@@ -1,11 +1,11 @@
 'use client'
 
 import { useRequest } from 'ahooks'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import type { M3uChannel } from '@iptv/playlist'
 import { closestCenter, DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
-import { BarsArrowDownIcon, PlayIcon, TrashIcon } from '@heroicons/react/24/solid'
+import { BarsArrowDownIcon, EyeIcon, TrashIcon } from '@heroicons/react/24/solid'
 import SortableItem from '@/components/SortableItem'
 import Alert, { type AlertImperativeHandler } from '@/components/Alert'
 import { Spinner } from '@/components/Spinner'
@@ -15,6 +15,7 @@ import { isChannel } from '@/services/playlist/types'
 import { fuzzyMatch } from '@/utils/fuzzyMatch'
 import { putChannels } from '@/app/api/channels/actions'
 import { FilterBar } from './FilterBar'
+import { pingChannel } from '../api/m3u/actions'
 
 export interface EditorProps {
   channels: Channel[]
@@ -26,9 +27,9 @@ export default function ChannelManager(props: EditorProps) {
   const [channels, setChannels] = useState([...defaultChannels])
   const [filteredChannels, setFilteredChannels] = useState(channels)
   const alertRef = useRef<AlertImperativeHandler>(null)
-  const focusNextRef = useRef<number>(null)
   const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor))
   const formRef = useRef<HTMLFormElement>(null)
+  const [status, setStatus] = useState<{ url: string; loading: boolean; valid?: boolean }[]>([])
 
   const channelOptions = useMemo(() => {
     return channels.map((channel) =>
@@ -110,6 +111,35 @@ export default function ChannelManager(props: EditorProps) {
     setChannels((prev) => prev.map((item) => (item.id === id ? { ...item, [field]: value } : item)))
   }
 
+  const testChannel = async (url: string) => {
+    setStatus((prev) => {
+      const existingStatus = prev.find((item) => item.url === url)
+      if (existingStatus) {
+        return prev.map((item) => (item.url === url ? { url, loading: true } : item))
+      } else {
+        return [...prev, { url, loading: true }]
+      }
+    })
+
+    try {
+      const channel = channels.find((channel) => channel.url === url)
+      if (!channel) {
+        throw new Error('Channel not found')
+      }
+
+      if (!(await pingChannel(url))) {
+        throw new Error('Failed to fetch channel')
+      }
+
+      alertRef.current?.show('Channel is working', { type: 'success' })
+      setStatus((prev) => prev.map((item) => (item.url === url ? { url, loading: false, valid: true } : item)))
+    } catch (error) {
+      const message = error instanceof Error ? error.message : Object.prototype.toString.call(error)
+      alertRef.current?.show(message, { type: 'error' })
+      setStatus((prev) => prev.map((item) => (item.url === url ? { url, loading: false, valid: false } : item)))
+    }
+  }
+
   const prependChannel = (index: number) => {
     const maxNumber = channels.reduce((acc, channel) => (channel.id > acc ? channel.id : acc), 0)
     const id = maxNumber + 1
@@ -120,8 +150,6 @@ export default function ChannelManager(props: EditorProps) {
       cloned.splice(index + 1, 0, newChannel)
       return cloned
     })
-
-    focusNextRef.current = id
   }
 
   const reset = () => {
@@ -181,16 +209,16 @@ export default function ChannelManager(props: EditorProps) {
     submit()
   }
 
-  useEffect(() => {
-    if (focusNextRef.current) {
-      const id = focusNextRef.current
-      focusNextRef.current = null
-
-      const index = channels.findIndex((channel) => channel.id === id)
+  const channelGroups: string[] = []
+  for (const channel of channels) {
+    if (channel.group && !channelGroups.includes(channel.group)) {
+      channelGroups.push(channel.group)
     }
-  }, [channels.length])
+  }
 
   const renderChannels = (channel: Channel, index: number) => {
+    const channelStatus = status.find((item) => item.url === channel.url)
+
     return (
       <SortableItem disabled={isFilterMode} key={channel.id} id={channel.id + ''}>
         <span className="px-3 text-sm font-medium">{`${channel.id}`.padStart(4, '0')}</span>
@@ -200,17 +228,27 @@ export default function ChannelManager(props: EditorProps) {
         <input
           className="w-40 h-8 text-sm border rounded-sm box-border px-3"
           type="text"
-          value={channel.name}
+          value={channel.name || ''}
           onChange={(event) => handleChannelChange(channel.id, 'name', event.target.value)}
           required
         />
 
-        <div className="w-40 box-border">
+        <div className="w-60 box-border">
           <ClearableSelect value={channel.url} options={channelOptions[index]} onChange={(value) => handleChannelChange(channel.id, 'url', value)} />
         </div>
 
-        <div className="flex-grow box-border">
-          <ClearableSelect value={channel.group} options={[]} onChange={(value) => handleChannelChange(channel.id, 'group', value)} />
+        <div className="flex-grow">
+          <input
+            className="h-8 w-full text-sm border rounded-sm box-border px-3"
+            value={channel.group || ''}
+            list="group-suggestions"
+            onChange={(event) => handleChannelChange(channel.id, 'group', event.target.value)}
+          />
+          <datalist id="group-suggestions">
+            {channelGroups.map((group) => (
+              <option key={group} value={group} />
+            ))}
+          </datalist>
         </div>
 
         <button
@@ -222,8 +260,22 @@ export default function ChannelManager(props: EditorProps) {
           <BarsArrowDownIcon className="h-4 w-4 text-white" />
         </button>
 
-        <button className="flex-basis h-8 text-sm bg-gray-800 text-white rounded-sm hover:bg-gray-900 px-4" aria-label="play channel" type="button">
-          <PlayIcon className="h-4 w-4 text-white" />
+        <button
+          disabled={!channel?.url || channelStatus?.loading}
+          onClick={() => channel.url && testChannel(channel.url)}
+          className={`flex-basis h-8 text-sm text-white rounded-sm px-4 disabled:opacity-50 disabled:cursor-not-allowed ${
+            channelStatus?.valid === false ? 'bg-red-500 hover:bg-red-600' : 'bg-yellow-500 hover:bg-yellow-600'
+          }`}
+          aria-label="test channel"
+          type="button"
+        >
+          {channelStatus?.loading ? (
+            <span className="h-full w-4 inline-block">
+              <Spinner />
+            </span>
+          ) : (
+            <EyeIcon className="h-4 w-4 text-white" />
+          )}
         </button>
 
         <button
