@@ -183,6 +183,16 @@ export default function ChannelManager(props: EditorProps) {
     })
   }
 
+  const autoTest = async () => {
+    for (const channel of channels) {
+      if (!channel.url) {
+        continue
+      }
+
+      await testChannel(channel.url)
+    }
+  }
+
   const { run: submit, loading: submitting } = useRequest(() => putChannels(channels), {
     manual: true,
     onSuccess: () => {
@@ -320,7 +330,11 @@ export default function ChannelManager(props: EditorProps) {
 
         <div className="flex gap-2 ml-auto">
           <button onClick={autoSelect} className="px-4 py-2 bg-blue-500 cursor-pointer text-sm text-white rounded-sm hover:bg-blue-600" type="button">
-            Auto
+            Auto Select
+          </button>
+
+          <button onClick={autoTest} className="px-4 py-2 bg-cyan-500 cursor-pointer text-sm text-white rounded-sm hover:bg-cyan-600" type="button">
+            Test All
           </button>
 
           <button onClick={reset} className="px-4 py-2 bg-gray-500 cursor-pointer text-sm text-white rounded-sm hover:bg-gray-600" type="button">
