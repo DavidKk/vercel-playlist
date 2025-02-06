@@ -3,12 +3,13 @@ import { writeM3U } from '@iptv/playlist'
 import type { M3uChannel, M3uPlaylist } from '@iptv/playlist'
 import { plainText } from '@/initializer/controller'
 import { getChannels } from '@/app/api/channels/actions'
+import { trimAction } from '@/initializer/wrapper'
 
 export const GET = plainText(async (req) => {
   const uri = new URL(req.url)
   const type = uri.searchParams.get('type')
 
-  const channels = await getChannels()
+  const channels = await trimAction(getChannels)()
   const m3uChannels = Array.from<M3uChannel>(
     (function* () {
       for (const { id, name, logo: tvgLogo, group: groupTitle, url } of channels) {
