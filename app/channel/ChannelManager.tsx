@@ -251,7 +251,11 @@ export default function ChannelManager(props: EditorProps) {
         />
 
         <div className="w-60 box-border">
-          <ClearableSelect value={channel.url} options={channelOptions[index]} onChange={(value) => handleChannelChange(channel.id, 'url', value)} />
+          <ClearableSelect
+            value={channel.url}
+            options={channelOptions[index]}
+            onChange={(value) => handleChannelChange(channel.id, 'url', value)}
+          />
         </div>
 
         <div className="flex-grow">
@@ -281,7 +285,7 @@ export default function ChannelManager(props: EditorProps) {
           disabled={!channel?.url || channelStatus?.loading}
           onClick={() => channel.url && testChannel(channel.url)}
           className={`flex-basis h-8 text-sm text-white rounded-sm px-4 disabled:opacity-50 disabled:cursor-not-allowed ${
-            channelStatus?.valid === false ? 'bg-red-500 hover:bg-red-600' : 'bg-yellow-500 hover:bg-yellow-600'
+            channelStatus?.valid === false ? 'bg-red-500 hover:bg-red-600' : channelStatus?.valid === true ? 'bg-green-500 hover:bg-green-600' : 'bg-yellow-500 hover:bg-yellow-600'
           }`}
           aria-label="test channel"
           type="button"
