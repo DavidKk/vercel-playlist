@@ -6,14 +6,15 @@ export interface Option {
 }
 
 export interface ClearableSelectProps {
-  value?: any
+  value?: string
   placeholder?: string
   options?: Option[]
   onChange?: (value: any) => void
+  enableClear?: boolean
 }
 
 export default function ClearableSelect(props: ClearableSelectProps) {
-  const { options = [], value, placeholder, onChange } = props
+  const { options = [], value, placeholder, onChange, enableClear = true } = props
   const [selectedOption, setSelectedOption] = useState(value)
 
   const handleOptionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -44,25 +45,27 @@ export default function ClearableSelect(props: ClearableSelectProps) {
       >
         {!selectedOption && <option value="">{placeholder || 'Select'}</option>}
         {options.map((option) => (
-          <option key={option.value} value={option.value} disabled={!option.value}>
+          <option key={option.value} value={option.value} disabled={typeof option.value !== 'boolean' && !option.value}>
             {option.label}
           </option>
         ))}
       </select>
 
-      <div className="flex h-4 w-4 items-center justify-center absolute right-2 top-1/2 transform -translate-y-1/2">
-        {!!selectedOption ? (
-          <button onClick={clearSelection} className="text-gray-500 hover:text-gray-800">
-            &#10005;
-          </button>
-        ) : (
-          <div className="pointer-events-none">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-          </div>
-        )}
-      </div>
+      {enableClear && (
+        <div className="flex h-4 w-4 items-center justify-center absolute right-2 top-1/2 transform -translate-y-1/2">
+          {!!selectedOption ? (
+            <button onClick={clearSelection} className="text-gray-500 hover:text-gray-800">
+              &#10005;
+            </button>
+          ) : (
+            <div className="pointer-events-none">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   )
 }

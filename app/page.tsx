@@ -1,7 +1,7 @@
 import { checkAccess } from '@/services/auth/access'
-import Editor from './Editor'
+import ChannelEditor from './channel/ChannelEditor'
 
 export default async function Home() {
   await checkAccess()
-  return <Editor />
+  return <ChannelEditor />
 }

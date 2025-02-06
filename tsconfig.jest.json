@@ -2,7 +2,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./app/*"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx", "**/*.d.ts", "**/*.spec.ts"],

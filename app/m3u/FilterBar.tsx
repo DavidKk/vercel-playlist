@@ -1,0 +1,52 @@
+import { useEffect, useState } from 'react'
+import { BackspaceIcon } from '@heroicons/react/24/solid'
+import { fuzzySearch } from '@/utils/find'
+import type { M3uConfig } from '@/services/m3u/types'
+
+export interface FilterBarProps {
+  configs: M3uConfig[]
+  onFilter: (configs: M3uConfig[]) => void
+}
+
+export function FilterBar(props: FilterBarProps) {
+  const { configs, onFilter } = props
+  const [nameFilter, setNameFilter] = useState('')
+
+  useEffect(() => {
+    const filteredConfigs = configs.filter((config) => {
+      if (nameFilter) {
+        if (!('name' in config)) {
+          return false
+        }
+
+        return fuzzySearch(nameFilter, config.name)
+      }
+
+      return true
+    })
+
+    onFilter(filteredConfigs)
+  }, [configs, nameFilter, onFilter])
+
+  return (
+    <div className="flex gap-2 justify-start sm:justify-end overflow-x-auto mb-2 p-2 sm:pb-2 bg-gray-100 rounded-sm shadow-md">
+      <input
+        type="text"
+        placeholder="Filter by name"
+        className="h-8 text-sm border rounded-sm box-border px-3"
+        value={nameFilter}
+        onChange={(event) => setNameFilter(event.target.value)}
+      />
+
+      <button
+        className="h-8 flex items-center justify-center text-sm border-gray-300 border rounded-sm box-border px-3"
+        onClick={() => {
+          setNameFilter('')
+        }}
+        type="button"
+      >
+        <BackspaceIcon className="h-4 w-4 text-gray-500" />
+      </button>
+    </div>
+  )
+}
