@@ -13,10 +13,10 @@ export default async function M3uConfigEditor() {
         <M3uConfigManager configs={configs} />
       </div>
 
-      <div className="mb-4 text-center">
-        <Link className="text-blue-500 underline" href="/">
-          Go to TV Channel Editor
-        </Link>
+      <div className="flex gap-4 items-center justify-center mb-4 text-center">
+        <Link className="text-gray-800 underline" href="/">Channel Editor</Link>
+        <Link className="text-gray-800 underline" href="/m3u">Config Editor</Link>
+        <Link className="text-gray-800 underline" href="/player">Play Online</Link>
       </div>
     </div>
   )
