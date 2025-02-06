@@ -12,8 +12,6 @@ export function FilterBar(props: FilterBarProps) {
   const { channels, onFilter } = props
   const [nameFilter, setNameFilter] = useState('')
 
-  const uniqueNames = useMemo(() => Array.from(new Set(channels.map((channel) => channel.name))), [channels])
-
   useEffect(() => {
     const filteredRules = channels.filter((channel) => {
       if (nameFilter) {

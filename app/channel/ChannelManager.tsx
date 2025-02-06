@@ -17,9 +17,14 @@ import { putChannels } from '@/app/api/channels/actions'
 import { ping } from '@/app/api/m3u/actions'
 import { FilterBar } from './FilterBar'
 
+export interface EnhancedM3uChannel extends M3uChannel {
+  origin: string
+  https?: boolean
+}
+
 export interface EditorProps {
   channels: Channel[]
-  m3uChannels: (M3uChannel & { origin: string })[]
+  m3uChannels: EnhancedM3uChannel[]
 }
 
 export default function ChannelManager(props: EditorProps) {
@@ -38,7 +43,7 @@ export default function ChannelManager(props: EditorProps) {
           const urls: string[] = []
           const options = Array.from(
             (function* () {
-              for (const { origin, tvgName, name: attName, url } of m3uChannels) {
+              for (const { origin, tvgName, name: attName, url, https: forceHttps } of m3uChannels) {
                 if (!url) {
                   continue
                 }
@@ -69,8 +74,9 @@ export default function ChannelManager(props: EditorProps) {
                   continue
                 }
 
-                yield { name: `${origin} ${name}`, url, weight }
-                urls.push(url)
+                const finalUrl = forceHttps ? url.replace('http://', 'https://') : url
+                yield { name: `${origin} ${name}`, url: finalUrl, weight }
+                urls.push(finalUrl)
               }
             })()
           )
@@ -84,8 +90,9 @@ export default function ChannelManager(props: EditorProps) {
 
             index++
 
-            const { name, url: value } = option
-            yield { label: `#${index} ${name}`, value }
+            const { name, url } = option
+            const isHttps = url.startsWith('https://')
+            yield { label: `#${index} ${name} ${isHttps ? '(HTTPS)' : ''}`, value: url }
           }
         })()
       )

@@ -3,6 +3,7 @@ export interface M3uConfig {
   name: string
   url: string
   enable?: boolean
+  https?: boolean
 }
 
 export type M3uConfigCollection = M3uConfig[]

@@ -21,7 +21,7 @@ export async function fetchChannels() {
 
   const channels = new Map<string, M3uChannel[]>()
   for (const config of configs) {
-    const { name, url, enable = true } = config
+    const { name, url, enable = true, https } = config
     if (!enable) {
       continue
     }
@@ -30,7 +30,11 @@ export async function fetchChannels() {
       const response = await fetchWithCache(url)
       const content = convertArrayBufferToString(response)
       const m3u = parseM3U(content)
-      channels.set(name, m3u.channels)
+      const m3uChannels = m3u.channels
+      channels.set(
+        name,
+        m3uChannels.map((channel) => ({ ...channel, https }))
+      )
     } catch {
       // eslint-disable-next-line no-console
       console.error(`Failed to fetch channels from ${name} ${url}`)

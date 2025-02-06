@@ -23,9 +23,15 @@ export default async function ChannelEditor() {
       <GettingStart />
 
       <div className="flex gap-4 items-center justify-center mb-4 text-center">
-        <Link className="text-gray-800 underline" href="/">Channel Editor</Link>
-        <Link className="text-gray-800 underline" href="/m3u">Config Editor</Link>
-        <Link className="text-gray-800 underline" href="/player">Play Online</Link>
+        <Link className="text-gray-800 underline" href="/">
+          Channel Editor
+        </Link>
+        <Link className="text-gray-800 underline" href="/m3u">
+          Config Editor
+        </Link>
+        <Link className="text-gray-800 underline" href="/player">
+          Play Online
+        </Link>
       </div>
     </div>
   )

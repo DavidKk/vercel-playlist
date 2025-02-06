@@ -144,10 +144,15 @@ export default function M3uConfigManager(props: EditorProps) {
       { label: 'Disable', value: false },
     ]
 
+    const httpsOptions = [
+      { label: 'Force Https', value: true },
+      { label: 'Disable', value: false },
+    ]
+
     return (
       <SortableItem disabled={isFilterMode} key={config.id} id={config.id + ''}>
         <input
-          className="w-80 h-8 text-sm border rounded-sm box-border px-3"
+          className="h-8 text-sm border rounded-sm box-border px-3"
           type="text"
           value={config.name || ''}
           onChange={(event) => handleM3uConfigChange(config.id, 'name', event.target.value)}
@@ -156,7 +161,7 @@ export default function M3uConfigManager(props: EditorProps) {
         />
 
         <input
-          className="flex-grow w-full h-8 text-sm border rounded-sm box-border px-3"
+          className="flex-grow h-8 text-sm border rounded-sm box-border px-3"
           type="url"
           value={config.url || ''}
           onChange={(event) => handleM3uConfigChange(config.id, 'url', event.target.value)}
@@ -165,12 +170,21 @@ export default function M3uConfigManager(props: EditorProps) {
           required
         />
 
-        <div className="w-60 box-border">
+        <div className="box-border">
           <ClearableSelect
             value={typeof config.enable === 'boolean' ? config.enable.toString() : 'true'}
             enableClear={false}
             options={enableOptions}
             onChange={(value) => handleM3uConfigChange(config.id, 'enable', value === 'true')}
+          />
+        </div>
+
+        <div className="box-border">
+          <ClearableSelect
+            value={typeof config.https === 'boolean' ? config.https.toString() : 'false'}
+            enableClear={false}
+            options={httpsOptions}
+            onChange={(value) => handleM3uConfigChange(config.id, 'https', value === 'true')}
           />
         </div>
 
