@@ -8,7 +8,7 @@ const PLAYER_ONLINE_URL = 'http://m3u-ip.tv/browser'
 
 export default function PlayerPage() {
   const [baseUrl, setBaseUrl] = useState('')
-  
+
   useEffect(() => {
     setBaseUrl(window.location.origin)
   }, [])
@@ -27,8 +27,8 @@ export default function PlayerPage() {
         <div className="text-center max-w-md mx-auto">
           <p className="mb-6 text-lg">Click the button below to play the video</p>
 
-          <button 
-            onClick={handleClick} 
+          <button
+            onClick={handleClick}
             className="px-14 py-6 bg-gray-800 text-white rounded-lg hover:bg-gray-900"
           >
             <PlayIcon />
@@ -37,6 +37,9 @@ export default function PlayerPage() {
 
           <p className="mt-6 text-md text-gray-500">
             Since M3U8 and other resources may be hosted on HTTP, the web cannot request HTTP resources over HTTPS. <br />If it automatically redirects to an HTTPS address, you can switch to the HTTP protocol. The player service used is <a className="underline" href={PLAYER_ONLINE_URL} target="_blank">{PLAYER_ONLINE_URL}</a>.
+          </p>
+          <p className="mt-6 text-md text-gray-500">
+            The player supports M3U playlists in HLS or DASH. Other protocols may not be supported and could result in playback failure.
           </p>
         </div>
       </div>
