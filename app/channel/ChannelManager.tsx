@@ -251,11 +251,7 @@ export default function ChannelManager(props: EditorProps) {
         />
 
         <div className="w-60 box-border">
-          <ClearableSelect
-            value={channel.url}
-            options={channelOptions[index]}
-            onChange={(value) => handleChannelChange(channel.id, 'url', value)}
-          />
+          <ClearableSelect value={channel.url} options={channelOptions[index]} onChange={(value) => handleChannelChange(channel.id, 'url', value)} />
         </div>
 
         <div className="flex-grow">

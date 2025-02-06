@@ -29,12 +29,17 @@ export async function fetchChannels() {
     try {
       const response = await fetchWithCache(url)
       const content = convertArrayBufferToString(response)
-      const m3u = parseM3U(content)
-      const m3uChannels = m3u.channels
-      channels.set(
-        name,
-        m3uChannels.map((channel) => ({ ...channel, https }))
-      )
+
+      let m3uChannels: M3uChannel[]
+      if (url.endsWith('.m3u')) {
+        m3uChannels = parseM3UContent(content, https)
+      } else if (url.endsWith('.txt')) {
+        m3uChannels = parseTxtContent(content, https)
+      } else {
+        throw new Error('Unsupported file format')
+      }
+
+      channels.set(name, m3uChannels)
     } catch {
       // eslint-disable-next-line no-console
       console.error(`Failed to fetch channels from ${name} ${url}`)
@@ -48,4 +53,32 @@ export async function updateM3uConfigs(m3uConfigs: M3uConfig[]) {
   const { gistId, gistToken } = getGistInfo()
   const content = JSON.stringify(m3uConfigs, null, 2)
   await writeGistFile({ fileName: M3U_FILE_NAME, content, gistId, gistToken })
+}
+
+function parseM3UContent(content: string, https?: boolean): M3uChannel[] {
+  const m3u = parseM3U(content)
+  return m3u.channels.map((channel) => ({ ...channel, https }))
+}
+
+function parseTxtContent(content: string, https?: boolean): M3uChannel[] {
+  return Array.from(
+    (function* () {
+      for (const line of content.split('\n')) {
+        const parts = line.split(',')
+        if (parts.length < 2) {
+          continue
+        }
+
+        let [name, url] = parts
+        name = name.trim()
+        url = url.trim()
+
+        if (!url.startsWith('http')) {
+          continue
+        }
+
+        yield { name, url, https }
+      }
+    })()
+  )
 }

@@ -60,7 +60,6 @@ export async function fetchWithCache(url: string, options?: FetchOptions) {
       }
 
       const data = await response.arrayBuffer()
-
       // Update cache
       cache.set(cacheKey, { data, timestamp: Date.now() })
 

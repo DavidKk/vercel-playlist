@@ -201,7 +201,11 @@ export default function M3uConfigManager(props: EditorProps) {
           disabled={!config?.url || m3uConfigStatus?.loading}
           onClick={() => config.url && testM3uConfig(config.url)}
           className={`flex-basis h-8 text-sm text-white rounded-sm px-4 disabled:opacity-50 disabled:cursor-not-allowed ${
-            m3uConfigStatus?.valid === false ? 'bg-red-500 hover:bg-red-600' : m3uConfigStatus?.valid === true ? 'bg-green-500 hover:bg-green-600' : 'bg-yellow-500 hover:bg-yellow-600'
+            m3uConfigStatus?.valid === false
+              ? 'bg-red-500 hover:bg-red-600'
+              : m3uConfigStatus?.valid === true
+                ? 'bg-green-500 hover:bg-green-600'
+                : 'bg-yellow-500 hover:bg-yellow-600'
           }`}
           aria-label="test config"
           type="button"
