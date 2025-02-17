@@ -269,7 +269,7 @@ export default function M3uConfigManager(props: EditorProps) {
 
           <button
             onClick={() => prependM3uConfig(configs.length)}
-            className="px-4 py-2 bg-blue-500 cursor-pointer text-sm text-white rounded-sm hover:bg-blue-600"
+            className="px-4 py-2 bg-indigo-500 cursor-pointer text-sm text-white rounded-sm hover:bg-indigo-600"
             type="button"
             aria-label="Add Config"
             title="Add Config"

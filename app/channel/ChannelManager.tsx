@@ -358,7 +358,7 @@ export default function ChannelManager(props: EditorProps) {
 
           <button
             onClick={() => prependChannel(channels.length)}
-            className="px-4 py-2 bg-blue-500 cursor-pointer text-sm text-white rounded-sm hover:bg-blue-600"
+            className="px-4 py-2 bg-indigo-500 cursor-pointer text-sm text-white rounded-sm hover:bg-indigo-600"
             type="button"
             aria-label="Add Channel"
             title="Add Channel"
